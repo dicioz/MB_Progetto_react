@@ -1,0 +1,132 @@
+// ModifyProfile.js
+import React, { useState } from "react";
+import { SafeAreaView, View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
+import useProfileViewModel from "../viewmodels/profileViewModel";
+
+const ModifyProfile = ({ navigation }) => {
+  const { userData, updateUserInfo } = useProfileViewModel();
+
+  // Stati per modificare i dati
+  const [firstName, setFirstName] = useState(userData.nome);
+  const [lastName, setLastName] = useState(userData.cognome);
+  const [cardNumber, setCardNumber] = useState(userData.numero);
+  const [expiryMonth, setExpiryMonth] = useState(userData.scadenza.split('/')[0]);
+  const [expiryYear, setExpiryYear] = useState(userData.scadenza.split('/')[1]);
+  const [cvv, setCvv] = useState(userData.cvv);
+
+  const handleSubmit = () => {
+    // Struttura dei dati aggiornati
+    const updatedData = {
+      nome: firstName,
+      cognome: lastName,
+      numero: cardNumber,
+      scadenza: `${expiryMonth}/${expiryYear}`,
+      cvv,
+    };
+
+    // Aggiorna i dati
+    updateUserInfo(updatedData);
+
+    // Torna alla schermata del profilo
+    navigation.goBack();
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Modifica Profilo</Text>
+
+        <Text style={styles.label}>Nome:</Text>
+        <TextInput
+          style={styles.input}
+          value={firstName}
+          onChangeText={setFirstName}
+        />
+
+        <Text style={styles.label}>Cognome:</Text>
+        <TextInput
+          style={styles.input}
+          value={lastName}
+          onChangeText={setLastName}
+        />
+
+        <Text style={styles.label}>Numero della Carta:</Text>
+        <TextInput
+          style={styles.input}
+          value={cardNumber}
+          onChangeText={setCardNumber}
+          keyboardType="numeric"
+        />
+
+        <Text style={styles.label}>Mese di Scadenza:</Text>
+        <TextInput
+          style={styles.input}
+          value={expiryMonth}
+          onChangeText={setExpiryMonth}
+          keyboardType="numeric"
+        />
+
+        <Text style={styles.label}>Anno di Scadenza:</Text>
+        <TextInput
+          style={styles.input}
+          value={expiryYear}
+          onChangeText={setExpiryYear}
+          keyboardType="numeric"
+        />
+
+        <Text style={styles.label}>CVV:</Text>
+        <TextInput
+          style={styles.input}
+          value={cvv}
+          onChangeText={setCvv}
+          keyboardType="numeric"
+        />
+
+        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+          <Text style={styles.buttonText}>Salva</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
+          <Text style={styles.buttonText}>Indietro</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 24,
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 18,
+    marginBottom: 8,
+  },
+  input: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 16,
+    paddingHorizontal: 8,
+  },
+  button: {
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    borderRadius: 5,
+    marginVertical: 8,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
+  },
+});
+
+export default ModifyProfile;
