@@ -58,7 +58,7 @@ const App = () => {
       >
         {/* Tab.Screen è una singola tab, name è utilizzato in route.name */}
         <Tab.Screen name="Menu" component={MenuStackScreen} options={{ headerShown: false }} />{/*headerShown: false nasconde l'header*/}
-        <Tab.Screen name="Order" component={OrderStatus} options={{ title: 'Stato Ordine' }} /> 
+        <Tab.Screen name="Order" component={OrderStatus} options={{ title: 'Stato Ordine' }} /*usiamo title per definire il titolo da visualizzare nell'intestazione (barra in alto) della schermata -> da order cambia a Stato.*/ />
         <Tab.Screen name="Profile" component={ProfileStackScreen} options={{ headerShown: false }} />
       </Tab.Navigator>
     </NavigationContainer>

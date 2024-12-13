@@ -14,11 +14,11 @@ const useLocationViewModel = () => {
         const permissionRequestedBefore = await AsyncStorage.getItem('locationPermissionRequested');
         const status = await Location.getForegroundPermissionsAsync();
 
-        if (status.granted) {
+        if (status.granted) { //Controlla se i permessi di localizzazione sono già stati concessi dall'utente.
           setPermissionGranted(true);
           setCurrentView('menu'); // Torna al menu principale
           getLocation();
-        } else if (permissionRequestedBefore === 'true') {
+        } else if (permissionRequestedBefore === 'true') { //Controlla se i permessi sono stati richiesti in precedenza ma non concessi
           setShowPermissionPopup(false);
           setCurrentView('enableLocationScreen'); // Mostra schermata per abilitare i permessi
         } else {
@@ -34,8 +34,8 @@ const useLocationViewModel = () => {
 
   const requestPermissions = async () => {
     try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status === 'granted') {
+      const { status } = await Location.requestForegroundPermissionsAsync();  
+      if (status === 'granted') { //se utente concede i permessi, aggiorna lo stato interno per indicare che i permessi sono stati approvati.
         setPermissionGranted(true);
         setShowPermissionPopup(false);
         setCurrentView('menu'); // Torna al menu principale
@@ -55,7 +55,7 @@ const useLocationViewModel = () => {
   const getLocation = async () => {
     if (permissionGranted) {
       try {
-        const { coords } = await Location.getCurrentPositionAsync();
+        const { coords } = await Location.getCurrentPositionAsync();  // Ottiene la posizione corrente dell'utente
         setLocation(coords);
       } catch (error) {
         console.error("Errore durante l'ottenimento della posizione:", error);

@@ -1,3 +1,5 @@
+//Questo codice implementa a logica per recuperare una lista di menù tramite la funzione fetchMenus e gestire il relativo stato
+
 import { useState, useEffect } from 'react';
 import { fetchMenuDetails } from '../models/menuModel';
 
@@ -11,7 +13,7 @@ const useMenuDetailsViewModel = (menuId) => {
 
     const loadMenuDetails = async () => {
       try {
-        setLoading(true);
+        setLoading(true); //setLoading aggiorna lo stato della variabile loading ed è utilizzata per rappresentare lo stato di caricamento (loading) durante il fetch dei dati.
         const details = await fetchMenuDetails(menuId); 
         setMenuDetails(details); 
       } catch (err) {

@@ -24,6 +24,7 @@ const useLocation = () => {
       const userLocation = await Location.getCurrentPositionAsync();
       console.log('[getUserPosition] Location fetched:', userLocation);
 
+      //controlliamo che userLocation non sia null e che abbia proprieta coords
       if (!userLocation || !userLocation.coords) {
         setError('Invalid location data');
         console.error('[getUserPosition] Invalid location data');
