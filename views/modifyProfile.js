@@ -1,6 +1,6 @@
 // ModifyProfile.js
 import React, { useState } from "react";
-import { SafeAreaView, View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
+import { SafeAreaView, View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import useProfileViewModel from "../viewmodels/profileViewModel";
 
 const ModifyProfile = ({ navigation }) => {
@@ -10,26 +10,26 @@ const ModifyProfile = ({ navigation }) => {
   const [firstName, setFirstName] = useState(userData.nome);
   const [lastName, setLastName] = useState(userData.cognome);
   const [cardNumber, setCardNumber] = useState(userData.numero);
-  const [expiryMonth, setExpiryMonth] = useState(userData.scadenza.split('/')[0]);
-  const [expiryYear, setExpiryYear] = useState(userData.scadenza.split('/')[1]);
+  const [expiryMonth, setExpiryMonth] = useState(userData.mese_scadenza);
+  const [expiryYear, setExpiryYear] = useState(userData.anno_scadenza);
   const [cvv, setCvv] = useState(userData.cvv);
 
-  const handleSubmit = () => {
-    // Struttura dei dati aggiornati
+  const handleSave = () => {
     const updatedData = {
       nome: firstName,
       cognome: lastName,
       numero: cardNumber,
-      scadenza: `${expiryMonth}/${expiryYear}`,
-      cvv,
+      mese_scadenza: expiryMonth,
+      anno_scadenza: expiryYear,
+      cvv: cvv
     };
 
-    // Aggiorna i dati
-    updateUserInfo(updatedData);
+    updateUserInfo(updatedData);  // Salva i dati
 
-    // Torna alla schermata del profilo
+    // Torna alla schermata del profilo, che ora rifletterà i nuovi dati
     navigation.goBack();
   };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -82,10 +82,12 @@ const ModifyProfile = ({ navigation }) => {
           keyboardType="numeric"
         />
 
-        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+        {/**Tasto salva, chiama updateUserInfo per salvare i dati */}
+        <TouchableOpacity style={styles.button} onPress={handleSave}>
           <Text style={styles.buttonText}>Salva</Text>
         </TouchableOpacity>
 
+        {/**Tasto indietro, torna alla schermata precedente */}
         <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
           <Text style={styles.buttonText}>Indietro</Text>
         </TouchableOpacity>

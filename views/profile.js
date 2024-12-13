@@ -9,9 +9,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Profile = ({navigation}) => {  // Aggiungi il parametro navigation, 
   //derivante dal fatto che la pagina "Profile" è registrata in App.js in uno stack navigator
-  const { userData, updateUserInfo } = useProfileViewModel();
+  const { userData } = useProfileViewModel();
 
-  // Gestore per il salvataggio dei dati modificati
+  /* // Gestore per il salvataggio dei dati modificati
   const handleSubmit = () => {
     // Qui puoi aggiungere la logica per aggiornare i dati
     updateUserInfo({
@@ -22,7 +22,7 @@ const Profile = ({navigation}) => {  // Aggiungi il parametro navigation,
       cvv,
     });
   };
-
+ */
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
