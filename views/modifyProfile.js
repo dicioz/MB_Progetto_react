@@ -1,10 +1,10 @@
 // ModifyProfile.js
 import React, { useState } from "react";
-import { SafeAreaView, View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { SafeAreaView, View, Text, TextInput, StyleSheet, Button, TouchableOpacity } from "react-native";
 import useProfileViewModel from "../viewmodels/profileViewModel";
 
-const ModifyProfile = ({ navigation }) => {
-  const { userData, updateUserInfo } = useProfileViewModel();
+const ModifyProfile = ({ route, navigation }) => {
+  const { userData, updateUserInfo } = route.params;
 
   // Stati per modificare i dati
   const [firstName, setFirstName] = useState(userData.nome);

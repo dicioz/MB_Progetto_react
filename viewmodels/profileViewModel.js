@@ -1,5 +1,6 @@
 // /viewmodels/profileViewModel.js
-import { useState, setPage } from 'react';
+import { useState, useEffect } from 'react';
+import {saveProfile, getSid} from '../models/profileModel';
 
 const useProfileViewModel = () => {
   const [userData, setUserData] = useState({
@@ -15,12 +16,30 @@ const useProfileViewModel = () => {
     orderStatus: 'ON_DELIVERY',
   });
 
-  const updateUserInfo = (newData) => {
+  const updateUserInfo = async (newData) => {
     // Aggiorna i dati utente con i nuovi dati
     console.log('Updating user data with:', newData);
     //aggiorna solamente i dati modificati 
-    setUserData((prevData) => ({ ...prevData, ...newData }));
-    console.log('User data updated:', userData);
+    setUserData((prevData) => ({
+      ...prevData,
+      ...newData,
+    }));
+
+    // dati da inviare al server
+    const datasToSave = {
+      firtsname: newData.nome,
+      lastname: newData.cognome,
+      cardFullName: newData.intestatario,
+      cardNumber: newData.numero,
+      cardExpireMonth: newData.mese_scadenza,
+      cardExpireYear: newData.anno_scadenza,
+      cardCVV: newData.cvv,
+      sid : getSid()
+    };
+
+    //salva i dati sul server
+    await saveProfile(datasToSave);
+
 
   };
 
@@ -28,6 +47,8 @@ const useProfileViewModel = () => {
     userData,
     updateUserInfo,
   };
+
+
 };
 
 export default useProfileViewModel;
