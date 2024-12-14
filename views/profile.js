@@ -5,9 +5,11 @@ import useProfileViewModel from '../viewmodels/profileViewModel';
 import ModifyProfile from './modifyProfile'; // Importa la schermata per la modifica
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useFocusEffect } from '@react-navigation/native'; // Importa useFocusEffect
 
 
-const Profile = ({navigation}) => {  // Aggiungi il parametro navigation, 
+
+const Profile = ({ navigation }) => {  // Aggiungi il parametro navigation, 
   //derivante dal fatto che la pagina "Profile" è registrata in App.js in uno stack navigator
   const { userData } = useProfileViewModel();
 
@@ -23,6 +25,14 @@ const Profile = ({navigation}) => {  // Aggiungi il parametro navigation,
     });
   };
  */
+
+  // Usando `useFocusEffect` per forzare il ricaricamento dei dati quando la schermata viene visualizzata
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log('Screen focused. Current user data:', userData); // Verifica se i dati sono aggiornati
+    }, [userData]) // Questo si attiva ogni volta che `userData` cambia
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>

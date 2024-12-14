@@ -1,5 +1,6 @@
 // /viewmodels/profileViewModel.js
 import { useState, setPage } from 'react';
+import { useEffect } from "react";
 
 const useProfileViewModel = () => {
   const [userData, setUserData] = useState({
@@ -15,14 +16,27 @@ const useProfileViewModel = () => {
     orderStatus: 'ON_DELIVERY',
   });
 
+
   const updateUserInfo = (newData) => {
     // Aggiorna i dati utente con i nuovi dati
     console.log('Updating user data with:', newData);
+
     //aggiorna solamente i dati modificati 
-    setUserData((prevData) => ({ ...prevData, ...newData }));
-    console.log('User data updated:', userData);
+    setUserData((prevData) => ({ ...prevData, ...newData })); //Spread operator (...) per aggiornare i dati
+    //...prevData: Copia tutte le proprietà dell'oggetto esistente userData nello stato aggiornato.
+    //...newData: Sovrascrive solo le proprietà specificate in newData.
+
+    //Essendo asincrono, non puoi fare un console.log subito dopo, ma devi fare un useEffect
+    //console.log('User data updated:', userData);
 
   };
+
+  // useEffect per monitorare i cambiamenti di `userData`
+  useEffect(() => {
+    console.log("User data updated:", userData);
+  }, [userData]); // Questo si attiva ogni volta che `userData` cambia.
+
+
 
   return {
     userData,
