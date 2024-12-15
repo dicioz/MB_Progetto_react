@@ -1,30 +1,44 @@
+// Importa le funzioni necessarie da React e dal modello di localizzazione
 import { useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Location from 'expo-location';
+import {
+  getPermissionsStatus,
+  requestLocationPermissions,
+  getCurrentLocation,
+  setPermissionRequested,
+  getPermissionRequestedBefore,
+} from '../models/locationModel';
 
+// Hook personalizzato per gestire la localizzazione
 const useLocationViewModel = () => {
+  // Definizione degli stati utilizzati nel componente
   const [location, setLocation] = useState(null);
   const [showPermissionPopup, setShowPermissionPopup] = useState(false);
   const [permissionGranted, setPermissionGranted] = useState(false);
-  const [currentView, setCurrentView] = useState('menu'); // Stato per le schermate
+  const [currentView, setCurrentView] = useState('menu');
 
+  // Effetto eseguito al montaggio del componente per verificare i permessi di localizzazione
   useEffect(() => {
     const checkPermissions = async () => {
       try {
-        const permissionRequestedBefore = await AsyncStorage.getItem('locationPermissionRequested');
-        const status = await Location.getForegroundPermissionsAsync();
+        // Controlla se i permessi sono stati richiesti in precedenza
+        const permissionRequestedBefore = await getPermissionRequestedBefore();
+        const status = await getPermissionsStatus();
 
-        if (status.granted) { //Controlla se i permessi di localizzazione sono già stati concessi dall'utente.
+        if (status.granted) {
+          // Se i permessi sono concessi, imposta lo stato appropriato e ottieni la posizione corrente
           setPermissionGranted(true);
-          setCurrentView('menu'); // Torna al menu principale
-          getLocation();
-        } else if (permissionRequestedBefore === 'true') { //Controlla se i permessi sono stati richiesti in precedenza ma non concessi
+          setCurrentView('menu');
+          fetchLocation();
+        } else if (permissionRequestedBefore === 'true') {
+          // Se i permessi sono stati negati in precedenza, mostra la schermata per abilitare la localizzazione
           setShowPermissionPopup(false);
-          setCurrentView('enableLocationScreen'); // Mostra schermata per abilitare i permessi
+          setCurrentView('enableLocationScreen');
         } else {
-          setShowPermissionPopup(true); // Mostra pop-up per la prima richiesta
+          // Se i permessi non sono stati richiesti, mostra il popup di richiesta permessi
+          setShowPermissionPopup(true);
         }
       } catch (error) {
+        // Gestione degli errori
         console.error('Errore durante il controllo dei permessi:', error);
       }
     };
@@ -32,43 +46,52 @@ const useLocationViewModel = () => {
     checkPermissions();
   }, []);
 
+  // Funzione per richiedere i permessi di localizzazione all'utente
   const requestPermissions = async () => {
     try {
-      const { status } = await Location.requestForegroundPermissionsAsync();  
-      if (status === 'granted') { //se utente concede i permessi, aggiorna lo stato interno per indicare che i permessi sono stati approvati.
+      // Richiede i permessi
+      const { status } = await requestLocationPermissions();
+      if (status === 'granted') {
+        // Se i permessi sono concessi, aggiorna lo stato e ottieni la posizione
         setPermissionGranted(true);
         setShowPermissionPopup(false);
-        setCurrentView('menu'); // Torna al menu principale
-        await AsyncStorage.setItem('locationPermissionRequested', 'true');
-        getLocation();
+        setCurrentView('menu');
+        await setPermissionRequested();
+        fetchLocation();
       } else {
+        // Se i permessi sono negati, aggiorna lo stato e mostra la schermata per abilitare la localizzazione
         setPermissionGranted(false);
         setShowPermissionPopup(false);
-        setCurrentView('enableLocationScreen'); // Mostra schermata per abilitare i permessi
-        await AsyncStorage.setItem('locationPermissionRequested', 'true');
+        setCurrentView('enableLocationScreen');
+        await setPermissionRequested();
       }
     } catch (error) {
+      // Gestione degli errori
       console.error('Errore durante la richiesta dei permessi:', error);
     }
   };
 
-  const getLocation = async () => {
+  // Funzione per ottenere la posizione attuale dell'utente
+  const fetchLocation = async () => {
     if (permissionGranted) {
       try {
-        const { coords } = await Location.getCurrentPositionAsync();  // Ottiene la posizione corrente dell'utente
+        // Ottiene le coordinate attuali dell'utente
+        const { coords } = await getCurrentLocation();
         setLocation(coords);
       } catch (error) {
-        console.error("Errore durante l'ottenimento della posizione:", error);
+        // Gestione degli errori
+        console.error('Errore durante l\'ottenimento della posizione:', error);
       }
     }
   };
 
+  // Ritorna gli stati e le funzioni necessari ai componenti
   return {
     location,
     showPermissionPopup,
     requestPermissions,
     currentView,
-    setCurrentView, // Esposto per consentire cambi di schermata
+    setCurrentView,
   };
 };
 

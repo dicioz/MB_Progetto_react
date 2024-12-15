@@ -1,11 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FlatList, StyleSheet, View, SafeAreaView, Text } from 'react-native';
 import { Card, Title, Paragraph } from 'react-native-paper';
 import useMenuViewModel from '../viewmodels/menuListViewModel';
+import useLocationViewModel from '../viewmodels/locationViewModel';
+import EnableLocationScreen from './enableLocation';
 
 const MenuList = ({ navigation }) => {
   const { menus, loading, error } = useMenuViewModel();
+  const { showPermissionPopup, currentView, requestPermissions } = useLocationViewModel();
 
+  // Mostra EnableLocationScreen se i permessi non sono concessi
+  if (showPermissionPopup) {
+    requestPermissions();
+    if (showPermissionPopup) {
+      return <EnableLocationScreen />;
+    }
+  }
+
+  // Stato di caricamento
   if (loading) {
     return (
       <View style={styles.loading}>
@@ -14,6 +26,7 @@ const MenuList = ({ navigation }) => {
     );
   }
 
+  // Stato di errore
   if (error) {
     return (
       <View style={styles.error}>
@@ -22,6 +35,7 @@ const MenuList = ({ navigation }) => {
     );
   }
 
+  // Renderizza l'elenco dei menu
   const renderItem = ({ item }) => (
     <Card
       style={styles.card}
@@ -34,7 +48,9 @@ const MenuList = ({ navigation }) => {
           resizeMode="cover"
         />
       ) : (
-        <View style={styles.noImage}><Text style={styles.noImageText}>No Image Available</Text></View>
+        <View style={styles.noImage}>
+          <Text style={styles.noImageText}>No Image Available</Text>
+        </View>
       )}
       <Card.Content>
         <Title style={styles.cardTitle}>{item.name}</Title>

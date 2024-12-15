@@ -7,10 +7,14 @@ const useMenuViewModel = () => {
   const [error, setError] = useState(null); 
 
   useEffect(() => {
+    //carica i menu
     const loadMenus = async () => {
       try {
+        //imposta lo stato di caricamento su true
         setLoading(true);
+        //richiama la funzione fetchMenus
         const data = await fetchMenus(); 
+        //imposta i menu ottenuti nello stato
         setMenus(data); 
       } catch (err) {
         setError(err.message || 'Errore durante il caricamento dei menù');
