@@ -1,14 +1,15 @@
 // ModifyProfile.js
 import React, { useState } from "react";
-import { SafeAreaView, View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { SafeAreaView, View, Text, TextInput, StyleSheet, Button, TouchableOpacity } from "react-native";
 import useProfileViewModel from "../viewmodels/profileViewModel";
 
-const ModifyProfile = ({ navigation }) => {
-  const { userData, updateUserInfo } = useProfileViewModel();
+const ModifyProfile = ({ route, navigation }) => {
+  const { userData, updateUserInfo } = route.params;
 
   // Stati per modificare i dati
   const [firstName, setFirstName] = useState(userData.nome);
   const [lastName, setLastName] = useState(userData.cognome);
+  const [intestatario, setIntestatario] = useState(userData.intestatario);
   const [cardNumber, setCardNumber] = useState(userData.numero);
   const [expiryMonth, setExpiryMonth] = useState(userData.mese_scadenza);
   const [expiryYear, setExpiryYear] = useState(userData.anno_scadenza);
@@ -18,6 +19,7 @@ const ModifyProfile = ({ navigation }) => {
     const updatedData = {
       nome: firstName,
       cognome: lastName,
+      intestatario: intestatario,
       numero: cardNumber,
       mese_scadenza: expiryMonth,
       anno_scadenza: expiryYear,
@@ -50,6 +52,13 @@ const ModifyProfile = ({ navigation }) => {
           onChangeText={setLastName}
         />
 
+        <Text style={styles.label}>Intestario della Carta:</Text>
+        <TextInput
+          style={styles.input}
+          value={intestatario}
+          onChangeText={setIntestatario}
+        />
+
         <Text style={styles.label}>Numero della Carta:</Text>
         <TextInput
           style={styles.input}
@@ -57,6 +66,8 @@ const ModifyProfile = ({ navigation }) => {
           onChangeText={setCardNumber}
           keyboardType="numeric"
         />
+
+
 
         <Text style={styles.label}>Mese di Scadenza:</Text>
         <TextInput

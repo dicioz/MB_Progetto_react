@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, ScrollView, View, TextInput, StatusBar, TouchableOpacity } from 'react-native';
 import { Card, Button, Title } from 'react-native-paper'; // Usando react-native-paper
 import useProfileViewModel from '../viewmodels/profileViewModel';
@@ -9,9 +9,10 @@ import { useFocusEffect } from '@react-navigation/native'; // Importa useFocusEf
 
 
 
+
 const Profile = ({ navigation }) => {  // Aggiungi il parametro navigation, 
   //derivante dal fatto che la pagina "Profile" è registrata in App.js in uno stack navigator
-  const { userData } = useProfileViewModel();
+  const { userData, updateUserInfo } = useProfileViewModel();
 
   /* // Gestore per il salvataggio dei dati modificati
   const handleSubmit = () => {
@@ -25,14 +26,6 @@ const Profile = ({ navigation }) => {  // Aggiungi il parametro navigation,
     });
   };
  */
-
-  // Usando `useFocusEffect` per forzare il ricaricamento dei dati quando la schermata viene visualizzata
-  useFocusEffect(
-    React.useCallback(() => {
-      console.log('Screen focused. Current user data:', userData); // Verifica se i dati sono aggiornati
-    }, [userData]) // Questo si attiva ogni volta che `userData` cambia
-  );
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -69,7 +62,9 @@ const Profile = ({ navigation }) => {  // Aggiungi il parametro navigation,
             </Card>
             <Card style={styles.subcard}>
               <Card.Content>
-                <Text style={styles.text}>Scadenza: {userData.scadenza}</Text>
+                <Text style={styles.text}>
+                  Scadenza: {userData.mese_scadenza}/{userData.anno_scadenza}
+                </Text>
               </Card.Content>
             </Card>
             <Card style={styles.subcard}>
@@ -82,7 +77,7 @@ const Profile = ({ navigation }) => {  // Aggiungi il parametro navigation,
 
         <Button
           mode="contained"
-          onPress={() => navigation.navigate('ModifyProfile')} // Naviga alla schermata di modifica
+          onPress={() => navigation.navigate('ModifyProfile', { userData, updateUserInfo })} // Naviga alla schermata di modifica
           style={styles.button}
           labelStyle={styles.buttonLabel}
         >

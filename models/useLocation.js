@@ -1,4 +1,7 @@
-// /hooks/useLocation.js
+
+//per ora non utilizzato, e forse mai...
+
+/* // /hooks/useLocation.js
 import { useState } from 'react';
 import * as Location from 'expo-location';
 import { fetchMenus } from '../models/menuModel'; // Assuming fetchMenus is in models
@@ -77,3 +80,4 @@ const useLocation = () => {
 };
 
 export default useLocation;
+ */
