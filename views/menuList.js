@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#f5f5f5' },
   card: {
     padding: 16,
+    marginTop: 16,
     marginBottom: 16,
     marginHorizontal: 16,
     borderRadius: 12,
