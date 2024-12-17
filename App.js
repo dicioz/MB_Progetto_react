@@ -10,7 +10,7 @@ import OrderStatus from './views/orderStatus';
 import Profile from './views/profile';
 import modifyProfile from './views/modifyProfile';
 import { useEffect } from 'react';
-import { fetchData } from './models/CommunicationController';
+import { fetchData } from './viewmodels/AppViewModel';
 
 // Stack Navigator per il menù
 const MenuStack = createNativeStackNavigator();
