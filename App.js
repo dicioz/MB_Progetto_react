@@ -9,6 +9,8 @@ import MenuDetails from './views/menuDetails';
 import OrderStatus from './views/orderStatus';
 import Profile from './views/profile';
 import modifyProfile from './views/modifyProfile';
+import { useEffect } from 'react';
+import { fetchData } from './models/CommunicationController';
 
 // Stack Navigator per il menù
 const MenuStack = createNativeStackNavigator();
@@ -33,6 +35,17 @@ const ProfileStackScreen = () => (
 
 // Tab Navigator
 const Tab = createBottomTabNavigator();
+
+//uso UseEffect per chiedere la prima volta SID, UID
+useEffect(() => {
+  fetchData().then((textToShow) => {
+    console.log(textToShow);
+  }).catch((error) => {
+    console.error(error);
+  });
+
+}, []); //La dipendenza vuota [] assicura che venga eseguito solo una volta
+
 
 const App = () => {
   return (
