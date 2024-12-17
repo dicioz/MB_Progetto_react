@@ -5,13 +5,12 @@ import {register} from "../models/profileModel";
 
 export async function fetchData() {
 
-    let user = undefined
+    
     try {
-        user = await register();
+        await register();
     } catch (error) {
         return "Error: " + error.message;   
     }
-    console.log("user: ", user);
     return "data loaded";
 }
 

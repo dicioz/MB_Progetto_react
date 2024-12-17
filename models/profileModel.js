@@ -1,78 +1,97 @@
 import React from "react";
 import CommunicationController from "./CommunicationController";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 let sid = null;
 let uid = null;
 
-//chiamata GET
+// Chiamata GET per ottenere l'utente
 export const getUser = async () => {
-    try {
-        let endpoint = "user/" + uid;		
-        const verb = 'GET';
-		const queryParams = {sid: this.sid};
-		const bodyParams = {};
-		return await CommunicationController.genericRequest(endpoint, verb, queryParams, bodyParams);
-    } catch(error) {
-        console.error('[getSid] Error during sid fetch:', error);
-        throw error;
+  try {
+    if (!uid) {
+      throw new Error("UID non è stato impostato.");
     }
-}
+    const endpoint = `/user/${uid}`;
+    const verb = "GET";
+    const queryParams = { sid: sid };
+    const bodyParams = {}; // GET non dovrebbe avere bodyParams
+    return await CommunicationController.genericRequest(endpoint, verb, queryParams, bodyParams);
+  } catch (error) {
+    console.error("[getUser] Errore durante il recupero dell'utente:", error);
+    throw error;
+  }
+};
 
-//GET del sid
+// Funzione per ottenere il SID
 export const getSid = () => {
-    return sid;
-}
+  return sid;
+};
 
-//chiamata PUT
+// Chiamata PUT per salvare il profilo
 export const saveProfile = async (profile) => {
-    if(!sid || !uid) {
-        console.log("sid: ", sid, "uid: ", uid);
-        throw new Error('sid or uid not set');
-    }
-    try {
-        //profile[profile.length - 1] = sid;
-        console.log("profile: ", profile);
-        await CommunicationController.genericRequest("/user", "PUT", uid, profile);
-    } catch(error) {
-        console.error('[saveProfile] Error during profile save:', error);
-        throw error;
-    }
-}
-
-//chiamata POST
-export const register = async () => {
-    const endPoint = "user";
-    const verb = 'POST';
+  if (!sid || !uid) {
+    console.log("SID: ", sid, "UID: ", uid);
+    throw new Error("SID o UID non sono impostati.");
+  }
+  try {
+    const endpoint = "/user/" + uid;
+    const verb = "PUT";
     const queryParams = {};
-    const bodyParams = {};
-    try{
-        const response = await CommunicationController.genericRequest(endPoint, verb, queryParams, bodyParams);
-        sid = response.sid;
-        uid = response.uid;
-        saveSidUid();
-    } catch(error) {
-        console.error('[register] Error during registration:', error);
-        throw error;
-    }
-}
+    console.log("Profilo da salvare: ", profile);
+    await CommunicationController.genericRequest(endpoint, verb, queryParams, profile);
+  } catch (error) {
+    console.error("[saveProfile] Errore durante il salvataggio del profilo:", error);
+    throw error;
+  }
+};
 
-//Async Storage
+// Chiamata POST per la registrazione
+export const register = async () => {
+  const endpoint = "/user";
+  const verb = "POST";
+  const queryParams = {};
+  const bodyParams = {};
+
+  try {
+    const storedSID = await AsyncStorage.getItem("SID");
+    const storedUID = await AsyncStorage.getItem("UID");
+
+    if (storedSID && storedUID) {
+      console.log("SID e UID già presenti nello storage.");
+      sid = storedSID;
+      uid = storedUID;
+      return;
+    }
+
+    console.log("Registrazione in corso...");
+    const response = await CommunicationController.genericRequest(endpoint, verb, queryParams, bodyParams);
+    sid = response.sid;
+    uid = response.uid;
+    //casto uid da number a string per evitare problemi con AsyncStorage
+    uid = uid.toString();
+
+    await saveSidUid();
+    console.log("Registrazione completata con SID:", sid, "e UID:", uid);
+  } catch (error) {
+    console.error("[register] Errore durante la registrazione:", error);
+    throw error;
+  }
+};
+
+// Funzione per salvare SID e UID in AsyncStorage
 async function saveSidUid() {
-	const SIDinStorage = await AsyncStorage.getItem("SID");
-    const UIDinStorage = await AsyncStorage.getItem("UID");
-
-	if (SIDinStorage) {
-		console.log("SID non ancora salvato", SIDinStorage, typeof SIDinStorage);
-	} else {
-		console.log("SID già salvato");
-		await AsyncStorage.setItem("SID", sid);
-	}
-
-    if(UIDinStorage) {
-        console.log("UID non ancora salvato", UIDinStorage, typeof UIDinStorage);
-    } else {
-        console.log("UID già salvato");
-        await AsyncStorage.setItem("UID", uid);
+  try {
+    if (sid) {
+      await AsyncStorage.setItem("SID", sid);
+      console.log("SID salvato nello storage:", sid);
     }
-}
 
+    if (uid) {
+      await AsyncStorage.setItem("UID", uid);
+      console.log("UID salvato nello storage:", uid);
+    }
+  } catch (error) {
+    console.error("[saveSidUid] Errore durante il salvataggio in AsyncStorage:", error);
+  }
+}

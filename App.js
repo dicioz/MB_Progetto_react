@@ -29,25 +29,27 @@ const MenuStackScreen = () => (
 const ProfileStackScreen = () => (
   <ProfileStack.Navigator>
     <ProfileStack.Screen name="ProfileMain" component={Profile} options={{ title: 'Profilo' }} />
-    <ProfileStack.Screen name="ModifyProfile" component={modifyProfile} options={{ title: 'Modifica Profilo' }} />  
+    <ProfileStack.Screen name="ModifyProfile" component={modifyProfile} options={{ title: 'Modifica Profilo' }} />
   </ProfileStack.Navigator>
 )
 
 // Tab Navigator
 const Tab = createBottomTabNavigator();
 
-//uso UseEffect per chiedere la prima volta SID, UID
-useEffect(() => {
-  fetchData().then((textToShow) => {
-    console.log(textToShow);
-  }).catch((error) => {
-    console.error(error);
-  });
-
-}, []); //La dipendenza vuota [] assicura che venga eseguito solo una volta
 
 
 const App = () => {
+  //uso UseEffect per chiedere la prima volta SID, UID
+  useEffect(() => {
+    fetchData().then((textToShow) => {
+      console.log(textToShow);
+    }).catch((error) => {
+      console.error(error);
+    });
+
+  }, []); //La dipendenza vuota [] assicura che venga eseguito solo una volta
+
+
   return (
     <NavigationContainer>
       <Tab.Navigator

@@ -24,7 +24,13 @@ export default class CommunicationController {
             },
         };
         if (verb !== "GET") {
-            fetchData.body = JSON.stringify(bodyParams);
+            try {
+                fetchData.body = JSON.stringify(bodyParams);
+                console.log("bodyParams: ", bodyParams);
+            } catch (error) {
+                console.error("Error during JSON serialization: ", error);
+                throw error;
+            }
             //console.log("bodyParams: ", bodyParams);
         }
 

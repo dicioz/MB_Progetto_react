@@ -1,6 +1,6 @@
 // /viewmodels/profileViewModel.js
 import { useState, useEffect } from 'react';
-import {saveProfile, getSid} from '../models/profileModel';
+import {saveProfile, getSid, getUser} from '../models/profileModel';
 
 const useProfileViewModel = () => {
   const [userData, setUserData] = useState({
@@ -37,9 +37,11 @@ const useProfileViewModel = () => {
       sid : getSid()
     };
 
+    console.log('Dati da salvare:', datasToSave);
     //salva i dati sul server
     await saveProfile(datasToSave);
-
+    const temp = await getUser();
+    console.log('Dati utente aggiornati:', temp);
 
   };
 
