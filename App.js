@@ -11,6 +11,9 @@ import Profile from './views/profile';
 import modifyProfile from './views/modifyProfile';
 import { useEffect } from 'react';
 import { fetchData } from './viewmodels/AppViewModel';
+import DBController from './models/DBController';
+import { useDrizzleStudio } from 'expo-drizzle-studio-plugin';
+
 
 // Stack Navigator per il menù
 const MenuStack = createNativeStackNavigator();
@@ -35,8 +38,6 @@ const ProfileStackScreen = () => (
 
 // Tab Navigator
 const Tab = createBottomTabNavigator();
-
-
 
 const App = () => {
   //uso UseEffect per chiedere la prima volta SID, UID

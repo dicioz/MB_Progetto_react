@@ -4,8 +4,6 @@
 import {register} from "../models/profileModel";
 
 export async function fetchData() {
-
-    
     try {
         await register();
     } catch (error) {

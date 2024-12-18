@@ -2,12 +2,24 @@ import React from "react";
 import CommunicationController from "./CommunicationController";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import DBController from "./DBController";
 
 let sid = null;
 let uid = null;
 
+let dbController = null;
+dbController = new DBController();
+dbController.openDB();
+
+if (dbController && dbController.db) {
+  console.log("va");
+  useDrizzleStudio(dbController.db);
+} else {
+  console.log("non va");
+}
+
 // Chiamata GET per ottenere l'utente
-export const getUser = async () => {
+export const getUserServer = async () => {
   try {
     if (!uid) {
       throw new Error("UID non è stato impostato.");
@@ -16,9 +28,11 @@ export const getUser = async () => {
     const verb = "GET";
     const queryParams = { sid: sid };
     const bodyParams = {}; // GET non dovrebbe avere bodyParams
-    return await CommunicationController.genericRequest(endpoint, verb, queryParams, bodyParams);
+    const response = await CommunicationController.genericRequest(endpoint, verb, queryParams, bodyParams);
+    console.log("getUserServer response: ", response);
+    await dbController.saveUserInDatabase(response);
   } catch (error) {
-    console.error("[getUser] Errore durante il recupero dell'utente:", error);
+    console.error("[getUserServer] Errore durante il recupero dell'utente:", error);
     throw error;
   }
 };

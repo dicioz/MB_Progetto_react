@@ -18,13 +18,15 @@ const ModifyProfile = ({ route, navigation }) => {
     const updatedData = {
       nome: firstName,
       cognome: lastName,
-      numero: cardNumber,
+      numero: cardNumber.toString(),
       mese_scadenza: expiryMonth,
       anno_scadenza: expiryYear,
-      lastOid: 0,
-      order_status: "in consegna",
-      cvv: cvv
-    };
+      lastOid: userData.lastOid, // Usa il valore esistente o modifica se necessario
+      orderStatus: userData.orderStatus, // Usa il valore esistente o modifica se necessario
+      cvv: cvv.toString(),
+    }; 
+
+
 
     updateUserInfo(updatedData);  // Salva i dati
 
@@ -57,7 +59,6 @@ const ModifyProfile = ({ route, navigation }) => {
           style={styles.input}
           value={cardNumber}
           onChangeText={setCardNumber}
-          keyboardType="numeric"
         />
 
         <Text style={styles.label}>Mese di Scadenza:</Text>
