@@ -21,6 +21,8 @@ const ModifyProfile = ({ route, navigation }) => {
       numero: cardNumber,
       mese_scadenza: expiryMonth,
       anno_scadenza: expiryYear,
+      lastOid: 0,
+      order_status: "in consegna",
       cvv: cvv
     };
 
