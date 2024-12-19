@@ -30,7 +30,28 @@ export default class DBController {
     
         console.log("user di SaveUserInDatabase: ", userData);
     
-        const query = "INSERT INTO Users (nome, cognome, numeroCarta, meseScadenza, annoScadenza, lastOid, orderStatus, cvv, uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        //const query = "INSERT INTO Users (nome, cognome, numeroCarta, meseScadenza, annoScadenza, lastOid, orderStatus, cvv, uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+
+        //COLAESCE serve per fare l'update di un campo solo se il campo passato è diverso da null
+        //excluded è il valore passato alla query
+        //Users è il valore attuale del db
+        //quindi se excluded.nome è diverso da null allora Users.nome = excluded.nome
+        //in pratica la query fa l'update solo dei campi passati diversi da null e dove l'uid è uguale
+        const query = `
+        INSERT INTO Users (nome, cognome, numeroCarta, meseScadenza, annoScadenza, lastOid, orderStatus, cvv, uid)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(uid) DO UPDATE SET
+            nome = COALESCE(excluded.nome, Users.nome),
+            cognome = COALESCE(excluded.cognome, Users.cognome),
+            numeroCarta = COALESCE(excluded.numeroCarta, Users.numeroCarta),
+            meseScadenza = COALESCE(excluded.meseScadenza, Users.meseScadenza),
+            annoScadenza = COALESCE(excluded.annoScadenza, Users.annoScadenza),
+            lastOid = COALESCE(excluded.lastOid, Users.lastOid),
+            orderStatus = COALESCE(excluded.orderStatus, Users.orderStatus),
+            cvv = COALESCE(excluded.cvv, Users.cvv);
+    `;
+
         try {
             await this.db.runAsync(query, userData);
             console.log("Utente salvato con successo:", userData);
