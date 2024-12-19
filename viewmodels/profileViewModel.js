@@ -1,40 +1,9 @@
-// /viewmodels/profileViewModel.js
 import { useState, useEffect } from 'react';
-import { saveProfile, getSid, getUserServer } from '../models/profileModel';
-import * as SQLite from 'expo-sqlite';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import DBController from '../models/DBController';
 
-
-/*
-de-commenta perché serve per la comunicazione con il server
-import CommunicationController from "../model/CommunicationController";
-+ inserisci la funzione fetch in modo che nell'useEffect venga chiamata per ottenere i dati dell'utente
-*/
-
 const useProfileViewModel = () => {
-
-  let db = null;
-
-  // Effetto per aprire il database al montaggio del componente, apre il database "userDB" e recupera il primo utente
-  useEffect(() => {
-    const openDatabase = async () => {
-      try {
-        db = new DBController();
-        await db.openDB("usersDB");
-        console.log('Database aperto:', db);
-        const temp = await db.getFirstUser();
-        setUserData((prevData) => ({ // Aggiorna i dati utente con i dati recuperati
-          ...prevData,
-          ...temp,
-        }));
-      }
-      catch (error) {
-        console.error('Errore durante l\'apertura del database:', error);
-      }
-    };
-    openDatabase();
-  }, []);
-
+  const db = new DBController(); // Istanza condivisa
   const [userData, setUserData] = useState({
     nome: 'Mario',
     cognome: 'Rossi',
@@ -48,53 +17,44 @@ const useProfileViewModel = () => {
     orderStatus: 'ON_DELIVERY',
   });
 
-
-  // Funzione per caricare i dati dal database locale
-  const loadUserData = async () => {
-    try {
-      const firstUser = await DBController.getFirstUser();
-      if (firstUser) {
-        console.log('Dati caricati dal database:', firstUser);
-        setUserData({
-          nome: firstUser.firstName || 'Mario',
-          cognome: firstUser.lastName || 'Rossi',
-          intestatario: firstUser.cardFullName || `${firstUser.firstName} ${firstUser.lastName}`,
-          numero: firstUser.cardNumber || '1234567812345678',
-          mese_scadenza: firstUser.cardExpireMonth || 12,
-          anno_scadenza: firstUser.cardExpireYear || 2023,
-          cvv: firstUser.cardCVV || '123',
-          uid: firstUser.uid || 0,
-          lastOid: firstUser.lastOid || 0,
-          orderStatus: firstUser.orderStatus || 'ON_DELIVERY',
-        });
-      }
-    } catch (error) {
-      console.error('Errore durante il caricamento dei dati utente dal database:', error);
-    }
-  };
-
-  // Effetto per caricare i dati al montaggio del componente
+  // Effetto per controllare l'inizializzazione del database
   useEffect(() => {
-    loadUserData();
+    const initializeDatabase = async () => {
+      try {
+        const isDBInitialized = await AsyncStorage.getItem('isDBInitialized'); // Controlla il flag
+
+        if (!isDBInitialized) {
+          console.log('[profileViewModel] Creazione database per la prima volta...');
+          await db.openDB(); // Crea il database
+          await AsyncStorage.setItem('isDBInitialized', 'true'); // Salva il flag
+        } else {
+          console.log('[profileViewModel] Database già inizializzato.');
+        }
+
+        // Recupera i dati utente dal database
+        const user = await db.getFirstUser();
+        if (user) {
+          console.log('[profileViewModel] Primo utente recuperato:', user);
+          setUserData((prevData) => ({
+            ...prevData,
+            ...user,
+          }));
+        }
+      } catch (error) {
+        console.error('Errore durante l\'inizializzazione del database:', error);
+        console.log('[profileViewModel] database: ', db);
+      }
+    };
+
+    initializeDatabase();
   }, []);
 
-
-
-
-
-
-
   const updateUserInfo = async (newData) => {
-    // Aggiorna i dati utente con i nuovi dati
-    console.log('Updating user data with:', newData);
-
-    //aggiorna solamente i dati modificati 
     setUserData((prevData) => ({
       ...prevData,
       ...newData,
     }));
 
-    // dati da inviare al server
     const datasToSave = {
       firstName: newData.nome,
       lastName: newData.cognome,
@@ -103,52 +63,27 @@ const useProfileViewModel = () => {
       cardExpireMonth: newData.mese_scadenza,
       cardExpireYear: newData.anno_scadenza,
       cardCVV: newData.cvv,
-      sid: getSid()
-    }
+      sid: getSid(),
+    };
 
-
-    /*
-    const datasToSave = {
-      firstName: "Marco",
-      lastName: "Rossi",
-      cardFullName: "Mario Rossi",
-      cardNumber: "1234567812345678",
-      cardExpireMonth: 12,
-      cardExpireYear: 0,
-      cardCVV: "123",
-      uid: 36984,
-      lastOid: 0,
-      orderStatus: "ON_DELIVERY",
-      sid: "FbZSkBgmJx8WVJaNZEQNgdaDeNTQ6GlSeuJaT9XyMDZwjdLU3Qz5kkla424b8m9u"
-    }*/
-
-    console.log('Dati da salvare:', datasToSave);
-
-    // Salva i dati sul server
     try {
       await saveProfile(datasToSave);
-      const temp = await getUserServer(); // Recupera i dati aggiornati
-      console.log('[ProfileViewModel] Dati utente aggiornati:', temp);
-      //console.log('Dati utente aggiornati di userData:', userData);
+      const temp = await getUserServer();
+      console.log('[ProfileViewModel] Dati utente aggiornati GET:', temp);
+      console.log('[ProfileViewModel] Dati utente salvati PUT:', datasToSave);
     } catch (error) {
       console.error('Errore durante il salvataggio:', error);
     }
-
   };
 
-  // useEffect per monitorare i cambiamenti di `userData`
   useEffect(() => {
     console.log("User data updated:", userData);
-  }, [userData]); // Questo si attiva ogni volta che `userData` cambia.
-
-
+  }, [userData]);
 
   return {
     userData,
     updateUserInfo,
   };
-
-
 };
 
 export default useProfileViewModel;
