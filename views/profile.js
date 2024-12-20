@@ -60,7 +60,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
               </Card>
               <Card style={styles.subcard}>
                 <Card.Content>
-                  <Text style={styles.text}>Scadenza: {userData.scadenza}</Text>
+                  <Text style={styles.text}>Scadenza: {userData.mese_scadenza}/{userData.anno_scadenza}</Text>
                 </Card.Content>
               </Card>
               <Card style={styles.subcard}>

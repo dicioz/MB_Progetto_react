@@ -7,14 +7,13 @@ import DBController from '../models/DBController';
 
 const useProfileViewModel = () => {
 
-  let db = null;
 
   // Effetto per aprire il database al montaggio del componente, apre il database "userDB" e recupera il primo utente
-  useEffect(() => {
+/*   useEffect(() => {
     const openDatabase = async () => {
       try {
         db = new DBController();
-        await db.openDB("usersDB");
+        db.openDB("usersDB");
         console.log('Database aperto:', db);
         const temp = await db.getFirstUser();
         setUserData((prevData) => ({ // Aggiorna i dati utente con i dati recuperati
@@ -23,43 +22,48 @@ const useProfileViewModel = () => {
         }));
       }
       catch (error) {
-        console.error('Errore durante l\'apertura del database:', error);
+        throw error;
       }
     };
     openDatabase();
-  }, []);
+  }, []); */
 
   const [userData, setUserData] = useState({
-    nome: 'Mario',
-    cognome: 'Rossi',
-    intestatario: 'Mario Rossi',
-    numero: '1234567812345678',
-    mese_scadenza: 12,
-    anno_scadenza: 2023,
-    cvv: '123',
+    nome: '',
+    cognome: '',
+    intestatario: '',
+    numero: '',
+    mese_scadenza: 0,
+    anno_scadenza: 0,
+    cvv: '',
     uid: 0,
     lastOid: 0,
-    orderStatus: 'ON_DELIVERY',
+    orderStatus: '',
   });
 
 
-  // Funzione per caricare i dati dal database locale
+// Funzione per caricare i dati dal database locale
   const loadUserData = async () => {
+    let db = null;
     try {
-      const firstUser = await DBController.getFirstUser();
+      db = new DBController();
+      await db.openDB();
+      console.log('Database aperto:', db);
+      const firstUser = await db.getFirstUser();
       if (firstUser) {
         console.log('Dati caricati dal database:', firstUser);
+        console.log('Nome 1:', firstUser.nome);
         setUserData({
-          nome: firstUser.firstName || 'Mario',
-          cognome: firstUser.lastName || 'Rossi',
-          intestatario: firstUser.cardFullName || `${firstUser.firstName} ${firstUser.lastName}`,
-          numero: firstUser.cardNumber || '1234567812345678',
-          mese_scadenza: firstUser.cardExpireMonth || 12,
-          anno_scadenza: firstUser.cardExpireYear || 2023,
-          cvv: firstUser.cardCVV || '123',
+          nome: firstUser.nome || '',
+          cognome: firstUser.cognome || '',
+          intestatario: firstUser.nome + " " + firstUser.cognome,
+          numero: firstUser.numeroCarta || '',
+          mese_scadenza: firstUser.meseScadenza || 0,
+          anno_scadenza: firstUser.annoScadenza || 0,
+          cvv: firstUser.cvv || '',
           uid: firstUser.uid || 0,
           lastOid: firstUser.lastOid || 0,
-          orderStatus: firstUser.orderStatus || 'ON_DELIVERY',
+          orderStatus: firstUser.orderStatus || '',
         });
       }
     } catch (error) {
@@ -71,11 +75,6 @@ const useProfileViewModel = () => {
   useEffect(() => {
     loadUserData();
   }, []);
-
-
-
-
-
 
 
   const updateUserInfo = async (newData) => {

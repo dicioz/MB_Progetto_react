@@ -10,17 +10,18 @@ const ModifyProfile = ({ route, navigation }) => {
   const [firstName, setFirstName] = useState(userData.nome);
   const [lastName, setLastName] = useState(userData.cognome);
   const [cardNumber, setCardNumber] = useState(userData.numero);
-  const [expiryMonth, setExpiryMonth] = useState(userData.mese_scadenza);
-  const [expiryYear, setExpiryYear] = useState(userData.anno_scadenza);
+  const [expiryMonth, setExpiryMonth] = useState(userData.mese_scadenza.toString());
+  const [expiryYear, setExpiryYear] = useState(userData.anno_scadenza.toString());
   const [cvv, setCvv] = useState(userData.cvv);
 
+  
   const handleSave = () => {
     const updatedData = {
       nome: firstName,
       cognome: lastName,
       numero: cardNumber.toString(),
-      mese_scadenza: expiryMonth,
-      anno_scadenza: expiryYear,
+      mese_scadenza: parseInt(expiryMonth),
+      anno_scadenza: parseInt(expiryYear),
       lastOid: userData.lastOid, // Usa il valore esistente o modifica se necessario
       orderStatus: userData.orderStatus, // Usa il valore esistente o modifica se necessario
       cvv: cvv.toString(),
