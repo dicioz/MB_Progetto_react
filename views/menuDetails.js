@@ -2,11 +2,12 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
 import { Button } from 'react-native-paper';
 import useMenuDetailsViewModel from '../viewmodels/menuDetailsViewModel';
+import useOrderViewModel from '../viewmodels/orderViewModel';
 
 const MenuDetails = ({ route, navigation }) => {
   const { menuId } = route.params;
-  const { menuDetails, loading, error } = useMenuDetailsViewModel(menuId);
-
+  const { menuDetails, loading, error, order } = useMenuDetailsViewModel(menuId);
+  const { location } = useOrderViewModel();
   if (loading) {
     return (
       <View style={styles.loading}>
@@ -31,6 +32,9 @@ const MenuDetails = ({ route, navigation }) => {
     );
   }
 
+  console.log('menuDetails: ', menuId);
+  console.log('Location:', location);
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {menuDetails.image ? (
@@ -45,7 +49,13 @@ const MenuDetails = ({ route, navigation }) => {
       <Text style={styles.price}>Prezzo: {menuDetails.price} €</Text>
       <Text style={styles.longDescription}>{menuDetails.longDescription}</Text>
       
-      <Button mode="contained" onPress={() => alert('Ordine effettuato!')} style={styles.button}>
+      <Button
+        mode="contained"
+        onPress={async () => {
+          const result = await order(menuId, location);
+        }}
+        style={styles.button}
+      >
         Ordina Ora
       </Button>
       

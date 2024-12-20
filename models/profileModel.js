@@ -38,7 +38,10 @@ export const getUserServer = async () => {
 };
 
 // Funzione per ottenere il SID
-export const getSid = () => {
+export const getSid = async () => {
+  if (!sid) {
+    sid = await AsyncStorage.getItem('SID');
+  }
   return sid;
 };
 
@@ -72,13 +75,14 @@ export const register = async () => {
     const storedUID = await AsyncStorage.getItem("UID");
 
     if (storedSID && storedUID) {
-      console.log("SID e UID già presenti nello storage.");
+      console.log("(profileModel) SID e UID già presenti nello storage.");
       sid = storedSID;
       uid = storedUID;
       return;
     }
 
     console.log("Registrazione in corso...");
+    console.log("Registrazione in corso all'endpoint:", endpoint);
     const response = await CommunicationController.genericRequest(endpoint, verb, queryParams, bodyParams);
     sid = response.sid;
     uid = response.uid;

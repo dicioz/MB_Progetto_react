@@ -1,14 +1,25 @@
 import * as Location from 'expo-location';
 import {getCurrentLocation, locationModel} from '../models/locationModel';
 import {fetchLocation} from '../models/locationModel';
-import { use } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const BASE_URL = 'https://develop.ewlab.di.unimi.it/mc/2425'; // Base URL for your API
-const sid = 'vC51NLdQlBnA4no63Ah4YGsiZn0w1MqXvqVRcyxx5lc2nQtYZSTnsVaq9d3EsklJ'; // Your session ID (replace with your own)
+//const  = 'vC51NLdQlBnA4no63Ah4YGsiZn0w1MqXvqVRcyxx5lc2nQtYZSTnsVaq9d3EsklJ'; // Your session ID (replace with your own)
+let sid;
 
 // Funzione per ottenere la posizione corrente
 const getCurrentPosition = async () => {
   try {
+    // Verifica lo stato dei permessi
+    let { status } = await Location.getForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      // Richiede i permessi se non sono stati concessi
+      const permissionResponse = await Location.requestForegroundPermissionsAsync();
+      if (permissionResponse.status !== 'granted') {
+        throw new Error('Permesso di accesso alla posizione non concesso');
+      }
+    }
+
     const { coords } = await getCurrentLocation();
     return {
       latitude: coords.latitude,
@@ -56,12 +67,19 @@ export const fetchMenus = async () => {
   try {
     // Ottiene la posizione corrente
     const { latitude, longitude } = await getCurrentPosition();
+    // Recupera il sid in modo asincrono
+    sid = await AsyncStorage.getItem('SID');
+    console.log('sid: ', sid);
+    if (!sid) {
+      throw new Error('SID non trovato');
+    }
     console.log(latitude, longitude);
 
     if (!latitude || !longitude) {
       throw new Error('Latitudine o longitudine non valida');
     }
 
+    console.log('sid: ', sid);
     const response = await fetch(`${BASE_URL}/menu?lat=${latitude}&lng=${longitude}&sid=${sid}`, {
       method: 'GET',
       headers: {
@@ -119,6 +137,10 @@ export const fetchMenuDetails = async (menuId) => {
 
     // Ottiene la posizione corrente
     const { latitude, longitude } = await getCurrentPosition();
+    console.log('sid: ', sid);
+    if (!sid) {
+      throw new Error('SID non trovato');
+    }
 
     // Fetch the menu details
     const response = await fetch(`${BASE_URL}/menu/${menuId}?lat=${latitude}&lng=${longitude}&sid=${sid}`, {

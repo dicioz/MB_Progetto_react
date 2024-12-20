@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -9,11 +9,12 @@ import MenuDetails from './views/menuDetails';
 import OrderStatus from './views/orderStatus';
 import Profile from './views/profile';
 import modifyProfile from './views/modifyProfile';
+import EnableLocationScreen from './views/enableLocation';
 import { useEffect } from 'react';
 import { fetchData } from './viewmodels/AppViewModel';
 import DBController from './models/DBController';
 import { useDrizzleStudio } from 'expo-drizzle-studio-plugin';
-
+import * as Location from 'expo-location';
 
 // Stack Navigator per il menù
 const MenuStack = createNativeStackNavigator();
@@ -40,16 +41,51 @@ const ProfileStackScreen = () => (
 const Tab = createBottomTabNavigator();
 
 const App = () => {
-  //uso UseEffect per chiedere la prima volta SID, UID
+  const [locationPermission, setLocationPermission] = useState(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+
   useEffect(() => {
+    const checkPermissions = async () => {
+      let { status } = await Location.getForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        const permissionResponse = await Location.requestForegroundPermissionsAsync();
+        setLocationPermission(permissionResponse.status === 'granted');
+      } else {
+        setLocationPermission(true);
+      }
+    };
+
+    checkPermissions();
+
     fetchData().then((textToShow) => {
       console.log(textToShow);
+      setIsInitialized(true);
     }).catch((error) => {
       console.error(error);
     });
 
   }, []); //La dipendenza vuota [] assicura che venga eseguito solo una volta
 
+  // Aggiungi questa condizione per attendere l'inizializzazione
+  if (!isInitialized) {
+    return (
+      <View style={styles.container}>
+        <Text>Inizializzazione in corso...</Text>
+      </View>
+    );
+  }
+
+  if (locationPermission === false) {
+    return <EnableLocationScreen />;
+  }
+
+  if (locationPermission === null) {
+    return (
+      <View style={styles.container}>
+        <Text>Controllo dei permessi...</Text>
+      </View>
+    );
+  }
 
   return (
     <NavigationContainer>

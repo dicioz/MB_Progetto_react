@@ -13,7 +13,8 @@ export const requestLocationPermissions = async () => {
 
 // Funzione per ottenere la posizione corrente
 export const getCurrentLocation = async () => {
-  return Location.getCurrentPositionAsync();
+  // Restituisce la posizione corrente con la massima precisione disponibile
+  return Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Highest });
 };
 
 // Funzione per salvare lo stato di richiesta dei permessi

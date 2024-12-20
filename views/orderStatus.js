@@ -3,17 +3,20 @@ import { View, Text, Button, StyleSheet } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import useOrderViewModel from '../viewmodels/orderViewModel';
 
-const OrderStatus = () => {
-  const { orderStatus, updateOrderStatus, location } = useOrderViewModel();
 
+const OrderStatus = () => {
+  const { orderStatus, updateOrderStatus, location, getOrderStatusViewModel } = useOrderViewModel();
   if (!location) {
     // Se la posizione non è ancora disponibile, mostra un messaggio di caricamento
-    return <Text>Caricamento posizione...</Text>;
+    return <Text>Caricamento posizione...</Text>
   }
+  console.log("(orderStatus)Order status:",location);
+
+
 
   return (
     <View style={styles.container}>
-      <Text>Stato Ordine: {orderStatus}</Text>
+      <Text>Stato Ordine: {getOrderStatusViewModel()} </Text>
       <Button title="Aggiorna Ordine" onPress={() => updateOrderStatus('In consegna')} />
       <MapView
         style={styles.map}

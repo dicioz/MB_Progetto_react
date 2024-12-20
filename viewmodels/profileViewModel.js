@@ -86,6 +86,8 @@ const useProfileViewModel = () => {
       ...newData,
     }));
 
+    console.log('(profileViewModel) sid: ', await getSid());
+
     // dati da inviare al server
     const datasToSave = {
       firstName: newData.nome,
@@ -95,8 +97,9 @@ const useProfileViewModel = () => {
       cardExpireMonth: newData.mese_scadenza,
       cardExpireYear: newData.anno_scadenza,
       cardCVV: newData.cvv,
-      sid: getSid()
+      sid: await getSid()
     }
+
 
 
     /*

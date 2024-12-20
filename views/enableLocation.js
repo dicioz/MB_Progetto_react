@@ -1,13 +1,20 @@
 // screens/EnableLocationScreen.js
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Button } from 'react-native';
+import * as Linking from 'expo-linking';
 
 const EnableLocationScreen = () => {
+  const openSettings = () => {
+    // Apre le impostazioni dell'app per consentire all'utente di abilitare i permessi
+    Linking.openSettings();
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.text}>
-        Per utilizzare questa funzionalità, è necessario abilitare i permessi di localizzazione nelle impostazioni del dispositivo.
+        Per continuare, abilita i servizi di localizzazione nelle impostazioni dell'app.
       </Text>
+      <Button title="Apri Impostazioni" onPress={openSettings} />
     </View>
   );
 };

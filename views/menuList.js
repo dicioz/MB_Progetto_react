@@ -1,24 +1,35 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FlatList, StyleSheet, View, SafeAreaView, Text } from 'react-native';
 import { Card, Title, Paragraph } from 'react-native-paper';
 import useMenuViewModel from '../viewmodels/menuListViewModel';
 import useLocationViewModel from '../viewmodels/locationViewModel';
 import EnableLocationScreen from './enableLocation';
 
+
 const MenuList = ({ navigation }) => {
   const { menus, loading, error } = useMenuViewModel();
   const { showPermissionPopup, currentView, requestPermissions } = useLocationViewModel();
 
   // Mostra EnableLocationScreen se i permessi non sono concessi
-  if (showPermissionPopup) {
-    requestPermissions();
-    if (showPermissionPopup) {
-      return <EnableLocationScreen />;
+  useEffect(() => {
+    const showPermission = async () => {
+      if (showPermissionPopup) {
+        console.log("Step 1");  
+        await requestPermissions();
+        console.log("Step 2");  
+        if (showPermissionPopup) {
+          console.log("Step 3");
+          return <EnableLocationScreen />;
+        }
+      }
     }
-  }
+    showPermission();
+  }, [showPermissionPopup]);
 
+  console.log("Step 4");
   // Stato di caricamento
   if (loading) {
+    console.log("Step 5");
     return (
       <View style={styles.loading}>
         <Text style={styles.loadingText}>Caricamento in corso...</Text>
