@@ -7,7 +7,7 @@ export default class DBController {
         this.db = null;
     }
 
-    
+
 
     async openDB() {
         this.db = await SQLite.openDatabaseAsync('usersDB');
@@ -30,9 +30,9 @@ export default class DBController {
             user.cardCVV,        // Mappato a cvv
             user.uid             // Mappato a uid
         ];
-    
+
         console.log("user di SaveUserInDatabase: ", userData);
-    
+
         //const query = "INSERT INTO Users (nome, cognome, numeroCarta, meseScadenza, annoScadenza, lastOid, orderStatus, cvv, uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 
@@ -63,7 +63,7 @@ export default class DBController {
             throw error;
         }
     }
-    
+
 
     async getFirstUser() {
         const query = "SELECT * FROM Users";
@@ -75,5 +75,19 @@ export default class DBController {
         const query = "SELECT * FROM Users";
         const result = await this.db.getAllAsync(query);
         return result;
+    }
+
+    async saveOid(oid, uid) {
+        const query = `
+        UPDATE Users 
+        SET lastOid = ?
+        WHERE uid = ?;
+    `;
+        try {
+            await this.db.runAsync(query, [oid, uid]);
+        } catch (error) {
+            console.error("[saveUserInDatabase] Errore durante il salvataggio dell'utente:", error);
+            throw error;
+        }
     }
 }

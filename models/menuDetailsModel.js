@@ -2,6 +2,7 @@ import React from "react";
 import CommunicationController from "./CommunicationController";
 import { getSid } from "./profileModel";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import DBController from "./DBController";
 
 export const orderMenu = async (mid, location) => { // mid = menuID
   try {
@@ -11,8 +12,18 @@ export const orderMenu = async (mid, location) => { // mid = menuID
       throw new Error('SID non trovato');
     }
     const body = { sid: sid, deliveryLocation: { lat: location.latitude, lng: location.longitude } };
-    const response = await CommunicationController.genericRequest(`/menu/${mid}/buy`, 'POST', null, body);
+    const response = await CommunicationController.genericRequest(`/menu/${mid}/buy`, 'POST', {}, body);
+
     console.log('response: ', response);
+    //salva l'oid nell'async storage
+    const oid = response.oid.toString();
+    await AsyncStorage.setItem('OID', oid);
+    const uid = await AsyncStorage.getItem('UID');
+
+    //salva l'oid nel db locale
+    const db = new DBController();
+    await db.openDB("userDB");
+    await db.saveOid(response.oid, uid);
     return response;
   } catch (error) {
     console.error('Error during menu request: ', error);

@@ -66,7 +66,7 @@ const App = () => {
 
   }, []); //La dipendenza vuota [] assicura che venga eseguito solo una volta
 
-  // Aggiungi questa condizione per attendere l'inizializzazione
+  // Aggiungi questa condizione per attendere l'inizializzazioneC
   if (!isInitialized) {
     return (
       <View style={styles.container}>
