@@ -1,6 +1,6 @@
 // ModifyProfile.js
 import React, { useState } from "react";
-import { SafeAreaView, View, Text, TextInput, StyleSheet, Button, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform } from "react-native";
+import { SafeAreaView, View, Text, TextInput, StyleSheet, Button, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform, Keyboard, TouchableWithoutFeedback } from "react-native";
 import useProfileViewModel from "../viewmodels/profileViewModel";
 
 const ModifyProfile = ({ route, navigation }) => {
@@ -25,6 +25,7 @@ const ModifyProfile = ({ route, navigation }) => {
       lastOid: userData.lastOid, // Usa il valore esistente o modifica se necessario
       orderStatus: userData.orderStatus, // Usa il valore esistente o modifica se necessario
       cvv: cvv.toString(),
+      intestatario: `${firstName} ${lastName}`,
     }; 
 
 
@@ -40,69 +41,76 @@ const ModifyProfile = ({ route, navigation }) => {
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={100}
     >
-      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
-        <SafeAreaView style={styles.container}>
-          <View style={styles.container}>
-            <Text style={styles.title}>Modifica Profilo</Text>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingBottom: 80 }}
+          keyboardDismissMode="on-drag"
+          keyboardShouldPersistTaps="handled"
+        >
+          <SafeAreaView style={styles.container}>
+            <View style={styles.container}>
+              <Text style={styles.title}>Modifica Profilo</Text>
 
-            <Text style={styles.label}>Nome:</Text>
-            <TextInput
-              style={styles.input}
-              value={firstName}
-              onChangeText={setFirstName}
-            />
+              <Text style={styles.label}>Nome:</Text>
+              <TextInput
+                style={styles.input}
+                value={firstName}
+                onChangeText={setFirstName}
+              />
 
-            <Text style={styles.label}>Cognome:</Text>
-            <TextInput
-              style={styles.input}
-              value={lastName}
-              onChangeText={setLastName}
-            />
+              <Text style={styles.label}>Cognome:</Text>
+              <TextInput
+                style={styles.input}
+                value={lastName}
+                onChangeText={setLastName}
+              />
 
-            <Text style={styles.label}>Numero della Carta:</Text>
-            <TextInput
-              style={styles.input}
-              value={cardNumber}
-              onChangeText={setCardNumber}
-            />
+              <Text style={styles.label}>Numero della Carta:</Text>
+              <TextInput
+                style={styles.input}
+                value={cardNumber}
+                onChangeText={setCardNumber}
+              />
 
-            <Text style={styles.label}>Mese di Scadenza:</Text>
-            <TextInput
-              style={styles.input}
-              value={expiryMonth}
-              onChangeText={setExpiryMonth}
-              keyboardType="numeric"
-            />
+              <Text style={styles.label}>Mese di Scadenza:</Text>
+              <TextInput
+                style={styles.input}
+                value={expiryMonth}
+                onChangeText={setExpiryMonth}
+                keyboardType="numeric"
+              />
 
-            <Text style={styles.label}>Anno di Scadenza:</Text>
-            <TextInput
-              style={styles.input}
-              value={expiryYear}
-              onChangeText={setExpiryYear}
-              keyboardType="numeric"
-            />
+              <Text style={styles.label}>Anno di Scadenza:</Text>
+              <TextInput
+                style={styles.input}
+                value={expiryYear}
+                onChangeText={setExpiryYear}
+                keyboardType="numeric"
+              />
 
-            <Text style={styles.label}>CVV:</Text>
-            <TextInput
-              style={styles.input}
-              value={cvv}
-              onChangeText={setCvv}
-              keyboardType="numeric"
-            />
+              <Text style={styles.label}>CVV:</Text>
+              <TextInput
+                style={styles.input}
+                value={cvv}
+                onChangeText={setCvv}
+                keyboardType="numeric"
+              />
 
-            {/**Tasto salva, chiama updateUserInfo per salvare i dati */}
-            <TouchableOpacity style={styles.button} onPress={handleSave}>
-              <Text style={styles.buttonText}>Salva</Text>
-            </TouchableOpacity>
+              {/**Tasto salva, chiama updateUserInfo per salvare i dati */}
+              <TouchableOpacity style={styles.button} onPress={handleSave}>
+                <Text style={styles.buttonText}>Salva</Text>
+              </TouchableOpacity>
 
-            {/**Tasto indietro, torna alla schermata precedente */}
-            <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
-              <Text style={styles.buttonText}>Indietro</Text>
-            </TouchableOpacity>
-          </View>
-        </SafeAreaView>
-      </ScrollView>
+              {/**Tasto indietro, torna alla schermata precedente */}
+              <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
+                <Text style={styles.buttonText}>Indietro</Text>
+              </TouchableOpacity>
+            </View>
+          </SafeAreaView>
+        </ScrollView>
+      </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 };

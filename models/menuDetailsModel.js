@@ -1,6 +1,5 @@
 import React from "react";
 import CommunicationController from "./CommunicationController";
-import { getSid } from "./profileModel";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DBController from "./DBController";
 
@@ -18,6 +17,7 @@ export const orderMenu = async (mid, location) => { // mid = menuID
     //salva l'oid nell'async storage
     const oid = response.oid.toString();
     await AsyncStorage.setItem('OID', oid);
+    console.log('nuovo oid: ', oid);
     const uid = await AsyncStorage.getItem('UID');
 
     //salva l'oid nel db locale
@@ -29,4 +29,8 @@ export const orderMenu = async (mid, location) => { // mid = menuID
     console.error('Error during menu request: ', error);
     throw error;
   }
+};
+
+export const checkUserData = async() => {
+
 };

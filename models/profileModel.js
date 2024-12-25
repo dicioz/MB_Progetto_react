@@ -18,7 +18,7 @@ if (dbController && dbController.db) {
   console.log("non va");
 }
 
-// Chiamata GET per ottenere l'utente
+// Chiamata GET per ottenere l'utente e salvarlo nel database locale
 export const getUserServer = async () => {
   try {
     if (!uid) {

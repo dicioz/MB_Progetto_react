@@ -1,49 +1,73 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet, Image } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Polyline } from 'react-native-maps';
 import useOrderViewModel from '../viewmodels/orderViewModel';
 
 const OrderStatus = () => {
-  const { orderStatus, updateOrderStatus, location, getOrderStatusViewModel, sid} = useOrderViewModel();
+  const { orderStatus, updateOrderStatus, location, getOrderStatusViewModel, sid, oid } = useOrderViewModel();
   const [statusResult, setStatusResult] = useState(null);
   // Nuovo useEffect basato su sid e oid
   useEffect(() => {
-    let isMounted = true;
+    let interval = null; // serve a fare polling ogni 5 secondi
+    // Spiegazione: funzione che recupera lo stato ordine e gestisce la logica di 'false' e 'COMPLETED'
     const fetchStatus = async () => {
       try {
         const result = await getOrderStatusViewModel();
-        if (isMounted) {
+        
+        if (result === false) {
+          // Spiegazione: se non ci sono ordini, settiamo false e saltiamo il polling
+          setStatusResult(false);
+          console.log("Non hai effettuato alcun ordine");
+        } else {
+          console.log(result.oid);
           setStatusResult(result);
-          if (result.status === 'COMPLETED') {
+          // Spiegazione: se ordine completato, interrompe il polling
+          if (result.status === 'COMPLETED' && interval) {
             clearInterval(interval);
           }
         }
+        return result;
       } catch (error) {
         console.error('Error fetching order status:', error);
       }
     };
-    fetchStatus();
 
-    const interval = setInterval(fetchStatus, 5000);
+    fetchStatus();      // Esegui subito
+    interval = setInterval(fetchStatus, 5000); // Polling
 
     return () => {
-      isMounted = false;
-      clearInterval(interval);
+      if (interval) clearInterval(interval);
     };
-  }, []);
+  }, [oid]); // Spiegazione: array di dipendenze vuoto, esegue solo al mount e al unmount
+
+  if (statusResult === false) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.notfound}>Non hai effettuato alcun ordine</Text>
+      </View>
+    );
+  }
 
   if (!location) {
-    return <Text>Caricamento posizione...</Text>;
+    return (
+      <View style={styles.centered}>
+        <Text>Caricamento posizione...</Text>
+      </View>
+    );
   }
 
   if (!statusResult) {
-    return <Text>Caricamento stato ordine...</Text>;
+    return (
+      <View style={styles.centered}>
+        <Text>Caricamento stato ordine...</Text>
+      </View>
+    );
   }
 
   return (
     <View style={styles.container}>
       <Text>Stato Ordine: {statusResult.status}</Text>
-      <Button title="Aggiorna Ordine" onPress={() => updateOrderStatus('In consegna')} />
+      <Button title="Aggiorna Ordine" onPress={() => updateOrderStatus(statusResult.oid)} />
       <MapView
         style={styles.map}
         region={{
@@ -60,7 +84,7 @@ const OrderStatus = () => {
           title="La tua posizione"
           description="Posizione attuale"
         />
-        <Marker 
+        <Marker
           coordinate={{
             latitude: statusResult.currentPosition.lat,
             longitude: statusResult.currentPosition.lng,
@@ -73,6 +97,15 @@ const OrderStatus = () => {
             style={{ width: 40, height: 40, borderRadius: 5 }}
           />
         </Marker>
+        <Polyline
+          coordinates={[
+            { latitude: statusResult.currentPosition.lat, longitude: statusResult.currentPosition.lng },
+            { latitude: location.latitude, longitude: location.longitude },
+          ]}
+          strokeColor="#000"
+          strokeWidth={3}
+          lineDashPattern={[5, 5]}
+        />
       </MapView>
     </View>
   );
@@ -90,6 +123,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: 300,
     height: 300,
+  },
+  notfound: {
+    color: 'red',
+    flex: 1,
+    justifyContent: 'center',
+    textAlignVertical: 'center',  
+    textAlignHorizontal: 'center',
+    alignItems: 'center',
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
