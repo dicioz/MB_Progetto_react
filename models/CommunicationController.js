@@ -12,7 +12,9 @@ export default class CommunicationController {
             queryParams
         ).toString();
 
-        const url = BASE_URL + endpoint + "?" + queryParamsFormatted;
+        const url = queryParamsFormatted
+            ? `${BASE_URL}${endpoint}?${queryParamsFormatted}`
+            : `${BASE_URL}${endpoint}`;
 
         console.log("sending " + verb + " request to: " + url);
         //configura la richiesta
@@ -34,27 +36,36 @@ export default class CommunicationController {
             //console.log("bodyParams: ", bodyParams);
         }
 
-        //ottiene la risposta
-        let httpResponse = await fetch(url, fetchData);
-    
-        //controlla lo stato della risposta
-        const status = httpResponse.status;
-        console.log("status: ", status);
-        //se la risposta è positiva, deserializza l'oggetto
-        if (status === 200) {
-            let deserializedObject = await httpResponse.json();
-            return deserializedObject;
-        } else if (status === 204) {
-            console.log("No content");
-        } else {
-            const message = await httpResponse.text();
-            let error = new Error(
-                "Error message from the server. HTTP status: " +
-                status +
-                " " +
-                message,
-            );
-            throw error;
+        try {
+            //ottiene la risposta
+            let httpResponse = await fetch(url, fetchData);
+        
+            //controlla lo stato della risposta
+            const status = httpResponse.status;
+            console.log("status: ", status);
+            //se la risposta è positiva, deserializza l'oggetto
+            if (status === 200) {
+                let deserializedObject = await httpResponse.json();
+                return deserializedObject;
+            } else if (status === 204) {
+                console.log("No content");
+            } else {
+                const message = await httpResponse.text();
+                let error = new Error(
+                    "Error message from the server. HTTP status: " +
+                    status +
+                    " " +
+                    message,
+                );
+                throw error;
+            }
+        } catch (error) {
+            if (error.message.includes("Network request failed")) {
+                console.error("Problema di rete o server non raggiungibile.");
+                // ...possibile logica di fallback...
+            }
+            console.error("Errore durante la richiesta fetch:", error);
+            throw new Error("Errore durante la richiesta di rete: " + error.message);
         }
     }
 

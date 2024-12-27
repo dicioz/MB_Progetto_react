@@ -8,6 +8,7 @@ const useMenuViewModel = () => {
 
   useEffect(() => {
     //carica i menu
+    
     const loadMenus = async () => {
       try {
         //imposta lo stato di caricamento su true

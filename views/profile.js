@@ -47,33 +47,31 @@ const Profile = ({ navigation }) => {  // Aggiungi il parametro navigation,
           </Card.Content>
         </Card>
 
-        <Card style={styles.card}>
-          <Card.Content>
-            <Text style={styles.subtitle}>Carta di Credito</Text>
-            <Card style={styles.subcard}>
-              <Card.Content>
-                <Text style={styles.text}>Intestatario: {userData.intestatario}</Text>
-              </Card.Content>
-            </Card>
-            <Card style={styles.subcard}>
-              <Card.Content>
-                <Text style={styles.text}>Numero: {userData.numero}</Text>
-              </Card.Content>
-            </Card>
-            <Card style={styles.subcard}>
-              <Card.Content>
-                <Text style={styles.text}>
-                  Scadenza: {userData.mese_scadenza}/{userData.anno_scadenza}
-                </Text>
-              </Card.Content>
-            </Card>
-            <Card style={styles.subcard}>
-              <Card.Content>
-                <Text style={styles.text}>CVV: {userData.cvv}</Text>
-              </Card.Content>
-            </Card>
-          </Card.Content>
-        </Card>
+          <Card style={styles.card}>
+            <Card.Content>
+              <Text style={styles.subtitle}>Carta di Credito</Text>
+              <Card style={styles.subcard}>
+                <Card.Content>
+                  <Text style={styles.text}>Intestatario: {userData.intestatario}</Text>
+                </Card.Content>
+              </Card>
+              <Card style={styles.subcard}>
+                <Card.Content>
+                  <Text style={styles.text}>Numero: {userData.numero}</Text>
+                </Card.Content>
+              </Card>
+              <Card style={styles.subcard}>
+                <Card.Content>
+                  <Text style={styles.text}>Scadenza: {userData.mese_scadenza}/{userData.anno_scadenza}</Text>
+                </Card.Content>
+              </Card>
+              <Card style={styles.subcard}>
+                <Card.Content>
+                  <Text style={styles.text}>CVV: {userData.cvv}</Text>
+                </Card.Content>
+              </Card>
+            </Card.Content>
+          </Card>
 
         <Button
           mode="contained"

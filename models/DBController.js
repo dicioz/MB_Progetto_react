@@ -7,47 +7,15 @@ export default class DBController {
         this.db = null;
     }
 
-    async openDB() {
-        if (!this.db) {
-            console.log("[DBController] Inizializzazione del database...");
-            this.db = SQLite.openDatabase('usersDB'); // Apri o crea il database
-    
-            const query = `
-                CREATE TABLE IF NOT EXISTS Users (
-                    nome CHAR(20) NOT NULL,
-                    cognome CHAR(20) NOT NULL,
-                    numeroCarta CHAR(16) NOT NULL,
-                    meseScadenza INTEGER NOT NULL,
-                    annoScadenza INTEGER NOT NULL,
-                    lastOid INTEGER,
-                    orderStatus CHAR(20),
-                    cvv CHAR(3) NOT NULL,
-                    uid INTEGER NOT NULL PRIMARY KEY
-                );
-            `;
 
-            return new Promise((resolve, reject) => {
-                this.db.transaction((tx) => {
-                    tx.executeSql(
-                        query, // La query SQL da eseguire
-                        [],    // Parametri della query (nessuno in questo caso)
-                        () => {
-                            console.log("[DBController] Tabella creata o già esistente.");
-                            resolve(); // Indica che l'operazione è completata con successo
-                        },
-                        (_, error) => {
-                            console.error("[DBController] Errore durante la creazione della tabella:", error);
-                            reject(error); // Rifiuta la Promise in caso di errore
-                        }
-                    );
-                });
-            });
-            
-        } else {
-            console.log("[DBController] Database già aperto.");
-        }
+
+    async openDB() {
+        this.db = await SQLite.openDatabaseAsync('usersDB');
+        const query = "CREATE TABLE IF NOT EXISTS Users (nome char(20) NOT NULL, cognome char(20) NOT NULL, numeroCarta char(16) NOT NULL, meseScadenza INTEGER NOT NULL, annoScadenza INTEGER NOT NULL, lastOid INTEGER, orderStatus char(20), cvv char(3) NOT NULL, uid INTEGER NOT NULL, PRIMARY KEY(uid));";
+        //const query = "CREATE TABLE IF NOT EXISTS Users (ID INTEGER PRIMARY KEY AUTOINCREMENT, nome char(20) NOT NULL, cognome char(20) NOT NULL, );";
+
+        await this.db.execAsync(query);
     }
-    
 
     async saveUserInDatabase(user) {
         // Mappa correttamente i campi dalla risposta alle colonne del DB
@@ -62,9 +30,9 @@ export default class DBController {
             user.cardCVV,        // Mappato a cvv
             user.uid             // Mappato a uid
         ];
-    
+
         console.log("user di SaveUserInDatabase: ", userData);
-    
+
         //const query = "INSERT INTO Users (nome, cognome, numeroCarta, meseScadenza, annoScadenza, lastOid, orderStatus, cvv, uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 
@@ -95,7 +63,6 @@ export default class DBController {
             throw error;
         }
     }
-    
 
 
     async getFirstUser() {
@@ -127,14 +94,22 @@ export default class DBController {
     
     
     async getAllUsers() {
-        console.log("Getting all users");
-        const query = 'SELECT * FROM Users';
+        const query = "SELECT * FROM Users";
+        const result = await this.db.getAllAsync(query);
+        return result;
+    }
+
+    async saveOid(oid, uid) {
+        const query = `
+        UPDATE Users 
+        SET lastOid = ?
+        WHERE uid = ?;
+    `;
         try {
-            const result = await this.db.getAllAsync(query);
-            console.log("result", result);
-            return result.value;
-        } catch (err) {
-            console.log(err);
+            await this.db.runAsync(query, [oid, uid]);
+        } catch (error) {
+            console.error("[saveUserInDatabase] Errore durante il salvataggio dell'utente:", error);
+            throw error;
         }
     }
 }
